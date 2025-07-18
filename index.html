@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peng Tours & Safaris Ltd. - Executive Wildlife Encounters</title>
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Glide.js Carousel for Testimonials -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.core.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/css/glide.theme.min.css">
+
+    <!-- Google Fonts: Cormorant Garamond (Serif) & Inter (Sans-serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles for a VIP Executive Feel -->
+    <style>
+        /* --- THEME & COLOR PALETTE --- */
+        :root {
+            --color-primary: #B8860B; /* Dark Goldenrod for luxury */
+            --color-secondary: #2F4F4F; /* Dark Slate Gray for elegance */
+            --color-accent: #8B4513; /* Saddle Brown for earthy tones */
+            
+            --color-bg-light: #F5F5DC; /* Beige */
+            --color-text-light-theme: #1a1a1a; /* Near-black for light theme text */
+            
+            --color-bg-dark: #121212; /* Rich, deep black for dark mode */
+            --color-text-dark-theme: #E0E0E0; /* Off-white for dark theme text */
+        }
+
+        /* --- BASE STYLES --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-light);
+            color: var(--color-text-light-theme);
+            transition: background-color 0.5s ease, color 0.5s ease;
+            cursor: none; /* Hide default cursor */
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* --- DARK MODE STYLES --- */
+        html.dark body {
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-dark-theme);
+        }
+        .card, .faq-item, .form-input, .fleet-card, .testimonial-card {
+            background-color: #FFFFFF;
+            color: var(--color-text-light-theme);
+        }
+        html.dark .card, html.dark .faq-item, html.dark .form-input, html.dark .fleet-card, html.dark .testimonial-card {
+            background-color: #1E1E1E;
+            color: var(--color-text-dark-theme);
+        }
+        html.dark .form-input::placeholder { color: #888; }
+
+        /* --- CUSTOM CURSOR --- */
+        #custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+            z-index: 10001;
+        }
+        #custom-cursor.hover {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(184, 134, 11, 0.2);
+        }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--color-bg-dark); z-index: 10000; display: flex;
+            justify-content: center; align-items: center;
+            transition: opacity 0.75s ease, visibility 0.75s ease;
+        }
+        #preloader.loaded { opacity: 0; visibility: hidden; }
+
+        /* --- NAVIGATION BAR --- */
+        #navbar {
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        #navbar.scrolled {
+            background-color: rgba(245, 245, 220, 0.85); /* Semi-transparent Beige */
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        html.dark #navbar.scrolled { background-color: rgba(18, 18, 18, 0.85); }
+        .nav-link { position: relative; padding-bottom: 4px; }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 2px; background-color: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .dropdown:hover .dropdown-menu { display: block; }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.2)), url('https://images.unsplash.com/photo-1523805009345-7448845a9e53?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover; background-position: center; height: 100vh;
+        }
+
+        /* --- GENERAL STYLING --- */
+        .safari-btn {
+            background-color: var(--color-primary); color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+        .safari-btn:hover {
+            transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background-color: #c99a2e;
+        }
+        .section-title, .section-subtitle { opacity: 0; transform: translateY(30px); }
+        .gallery-item { overflow: hidden; border-radius: 0.75rem; }
+        .gallery-item img { transition: transform 0.5s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
+        
+        /* --- FAQ ACCORDION --- */
+        .faq-item .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out; }
+        .faq-item.active .faq-answer { max-height: 200px; padding-top: 1rem; padding-bottom: 1rem; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
+        .faq-icon { transition: transform 0.4s ease; }
+
+        /* --- TESTIMONIALS CAROUSEL (GLIDE.JS) --- */
+        .glide__slide {
+            opacity: 0.5;
+            transform: scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .glide__slide--active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .glide__bullets {
+            bottom: -2em;
+        }
+        .glide__bullet {
+            background-color: #ccc;
+        }
+        .glide__bullet--active {
+            background-color: var(--color-primary);
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+
+    <!-- Lottie Preloader -->
+    <div id="preloader">
+        <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_tmsb796g.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+    </div>
+
+    <!-- Header & Navigation -->
+    <header id="navbar" class="fixed top-0 left-0 w-full z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="flex items-center space-x-2 magnetic-item">
+                <svg class="h-8 w-8" style="color: var(--color-primary);" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 7L12 12L21 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-xl font-bold font-serif">Peng Tours & Safaris</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="nav-link magnetic-item">HOME</a>
+                <a href="#experiences" class="nav-link magnetic-item">EXPERIENCES</a>
+                <div class="relative dropdown">
+                    <button class="nav-link magnetic-item">GROUP TOURS</button>
+                    <div class="dropdown-menu absolute hidden bg-white dark:bg-gray-800 shadow-lg rounded-md mt-2 py-2 w-48">
+                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Untamed Encounter</a>
+                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Team Building</a>
+                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Volunteering</a>
+                    </div>
+                </div>
+                <a href="#about" class="nav-link magnetic-item">ABOUT</a>
+                <a href="#faq" class="nav-link magnetic-item">FAQs</a>
+                <a href="#contact" class="nav-link magnetic-item">CONTACT US</a>
+            </div>
+            <div class="flex items-center">
+                <button id="dark-mode-toggler" title="Toggle dark mode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none magnetic-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 moon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sun" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                </button>
+                <button id="mobile-menu-button" class="md:hidden ml-4 p-2 rounded-md focus:outline-none" title="Open mobile menu">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/80 dark:bg-black/80 backdrop-blur-sm">
+            <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">HOME</a>
+            <a href="#experiences" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">EXPERIENCES</a>
+            <a href="#group-tours" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">GROUP TOURS</a>
+            <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">ABOUT</a>
+            <a href="#faq" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">FAQs</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">CONTACT US</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero-section text-white flex flex-col justify-center items-center text-center">
+            <div class="max-w-4xl mx-auto px-4">
+                <h1 class="hero-line-chars text-5xl md:text-7xl font-bold leading-tight mb-4" style="text-shadow: 2px 2px 10px rgba(0,0,0,0.7);"></h1>
+                <p class="hero-line text-lg md:text-2xl font-light mb-8" style="text-shadow: 1px 1px 5px rgba(0,0,0,0.7);">Experience the pinnacle of African safaris with Peng Tours. Unforgettable moments, unparalleled luxury.</p>
+                <div class="hero-line">
+                    <a href="#contact" class="safari-btn inline-block font-bold py-4 px-10 rounded-lg text-lg shadow-lg magnetic-item">Begin Your Adventure</a>
+                </div>
+            </div>
+            <a href="#about" class="scroll-down-arrow absolute bottom-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </a>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-24 md:py-32">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+                <div class="about-content">
+                    <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">The Essence of Peng Tours</h2>
+                    <p class="mb-4 text-lg leading-relaxed">Peng Tours & Safaris Limited is not merely a travel company; we are curators of life-altering experiences. Born from a profound passion for the African continent's breathtaking landscapes and majestic wildlife, our mission is to deliver more than just a vacation. We craft bespoke journeys that connect you to the very soul of the wild, all while ensuring the highest standards of luxury, comfort, and safety.</p>
+                    <p class="leading-relaxed">Our philosophy is rooted in sustainable tourism and a deep respect for the natural world. We partner with local communities and conservation projects, ensuring that your journey with us contributes positively to the preservation of Africa's precious heritage for generations to come. With our expert guides and meticulously planned itineraries, every safari is an intimate and exclusive encounter with nature's grandeur.</p>
+                </div>
+                <div class="about-image-container relative h-96">
+                    <img src="https://images.unsplash.com/photo-1534511912349-3b9b54a1a405?auto=format&fit=crop&w=800&q=80" alt="Safari guide" class="absolute w-2/3 h-2/3 object-cover rounded-lg shadow-2xl top-0 left-0">
+                    <img src="https://images.unsplash.com/photo-1605301257002-5a30643731d4?auto=format&fit=crop&w=800&q=80" alt="Luxury safari tent" class="absolute w-2/3 h-2/3 object-cover rounded-lg shadow-2xl bottom-0 right-0">
+                </div>
+            </div>
+        </section>
+
+        <!-- Experiences Section -->
+        <section id="experiences" class="py-24 md:py-32 bg-black/5 dark:bg-white/5">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">The Peng Executive Standard</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Every journey with us is an all-inclusive affair, meticulously designed to provide an unparalleled safari experience. The following are just a glimpse of the standards you can expect.</p>
+                <div class="grid md:grid-cols-3 gap-8 text-left">
+                    <div class="card p-8 rounded-xl shadow-lg experience-card">
+                        <h3 class="text-2xl font-bold font-serif mb-3" style="color: var(--color-primary);">Private Guided Safaris</h3>
+                        <p>Command your adventure with a dedicated, expert naturalist guide and a private, state-of-the-art 4x4 Land Cruiser. Your pace, your interests, your unforgettable journey.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl shadow-lg experience-card">
+                        <h3 class="text-2xl font-bold font-serif mb-3" style="color: var(--color-primary);">Gourmet Bush Dining</h3>
+                        <p>Savor exquisite meals prepared by our private chefs in the heart of the wilderness. From champagne breakfasts at sunrise to starlit dinners, every meal is an event.</p>
+                    </div>
+                    <div class="card p-8 rounded-xl shadow-lg experience-card">
+                        <h3 class="text-2xl font-bold font-serif mb-3" style="color: var(--color-primary);">Luxury Accommodations</h3>
+                        <p>Retreat to exclusive, handpicked lodges and luxury tented camps that offer sublime comfort and stunning views, seamlessly blending opulence with the untamed environment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: The Fleet Section -->
+        <section id="fleet" class="py-24 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Our Executive Fleet</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Comfort, safety, and optimal viewing are paramount. Our fleet of custom-fitted, extended Toyota Land Cruisers are maintained to the highest standards, ensuring reliability in the most remote locations.</p>
+                <div class="grid md:grid-cols-2 gap-8 text-left items-center">
+                    <div class="fleet-image">
+                        <img src="https://images.unsplash.com/photo-1599933318633-14d437a9a473?auto=format&fit=crop&w=1200&q=80" alt="Safari vehicle interior" class="rounded-lg shadow-2xl w-full">
+                    </div>
+                    <div class="space-y-6">
+                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
+                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
+                            <div>
+                                <h3 class="font-bold text-lg">Pop-Up Photographic Roofs</h3>
+                                <p>Unobstructed 360-degree views for the perfect shot, every time.</p>
+                            </div>
+                        </div>
+                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
+                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
+                            <div>
+                                <h3 class="font-bold text-lg">On-Board Charging & Wi-Fi</h3>
+                                <p>Stay connected and powered up, even in the heart of the bush.</p>
+                            </div>
+                        </div>
+                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
+                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
+                            <div>
+                                <h3 class="font-bold text-lg">Cooler Box with Refreshments</h3>
+                                <p>Enjoy complimentary chilled water, soft drinks, and snacks throughout your game drive.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="py-24 md:py-32 bg-black/5 dark:bg-white/5">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Captured Moments</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Words can only say so much. Explore a collection of moments captured by our guests and guides, each telling a unique story of the African wild.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="gallery-item grid-item col-span-2 row-span-2"><img src="https://images.unsplash.com/photo-1589953911903-6987c4a5b4a1?auto=format&fit=crop&w=1200&q=80" alt="Elephant family" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1547471080-7cc2d5d88e93?auto=format&fit=crop&w=800&q=80" alt="Lion" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1502472401483-a7a2a0618024?auto=format&fit=crop&w=800&q=80" alt="Giraffe at sunset" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1557053913-35473a537446?auto=format&fit=crop&w=800&q=80" alt="Cheetah" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1593629828264-754d92193b0a?auto=format&fit=crop&w=800&q=80" alt="Hot air balloon over savanna" class="h-full w-full object-cover"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW: Testimonials Section -->
+        <section id="testimonials" class="py-24 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Words From Our Voyagers</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">The measure of our success is the joy and wonder reflected in the experiences of our guests. Here is what they have to say.</p>
+                <div class="glide">
+                    <div class="glide__track" data-glide-el="track">
+                        <ul class="glide__slides">
+                            <li class="glide__slide">
+                                <div class="testimonial-card p-8 rounded-lg shadow-lg h-full">
+                                    <p class="text-lg italic mb-4">"An experience that transcended all expectations. Peng Tours didn't just show us wildlife; they immersed us in the soul of Kenya. Every detail was flawless. We will be back."</p>
+                                    <p class="font-bold text-primary">- The Harrison Family, USA</p>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="testimonial-card p-8 rounded-lg shadow-lg h-full">
+                                    <p class="text-lg italic mb-4">"Our honeymoon safari was nothing short of magical. The private dinners under the stars, the knowledgeable guide, the sheer luxury in the middle of the bush... it was a dream. Thank you, Peng Tours."</p>
+                                    <p class="font-bold text-primary">- Aisha & Omar, UAE</p>
+                                </div>
+                            </li>
+                            <li class="glide__slide">
+                                <div class="testimonial-card p-8 rounded-lg shadow-lg h-full">
+                                    <p class="text-lg italic mb-4">"As a professional photographer, I demand the best positions and guides who understand light and animal behavior. Peng Tours delivered on all fronts. The best photographic safari I've ever been on."</p>
+                                    <p class="font-bold text-primary">- Klaus Richter, Germany</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="glide__bullets" data-glide-el="controls[nav]"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 md:py-32 bg-black/5 dark:bg-white/5">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
+                <div class="space-y-4">
+                    <div class="faq-item p-6 rounded-lg shadow-md">
+                        <div class="faq-question flex justify-between items-center cursor-pointer">
+                            <h3 class="text-xl font-semibold">What is the best time of year to go on a safari?</h3>
+                            <div class="faq-icon"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                        </div>
+                        <div class="faq-answer px-1"><p>The best time largely depends on what you want to see. The dry season (June to October) is generally considered prime time for wildlife viewing, as animals congregate around water sources. However, the "green season" (November to May) offers lush landscapes, fewer crowds, and is fantastic for birdwatching and seeing newborn animals.</p></div>
+                    </div>
+                    <div class="faq-item p-6 rounded-lg shadow-md">
+                        <div class="faq-question flex justify-between items-center cursor-pointer">
+                            <h3 class="text-xl font-semibold">What should I pack for a safari?</h3>
+                            <div class="faq-icon"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                        </div>
+                        <div class="faq-answer px-1"><p>We recommend comfortable, neutral-colored clothing (khaki, beige, olive). Pack layers as mornings can be cool and afternoons warm. Essential items include a wide-brimmed hat, sunglasses, sunscreen, insect repellent, a good pair of binoculars, and of course, your camera. We provide a detailed packing list upon booking.</p></div>
+                    </div>
+                    <div class="faq-item p-6 rounded-lg shadow-md">
+                        <div class="faq-question flex justify-between items-center cursor-pointer">
+                            <h3 class="text-xl font-semibold">Are your safaris suitable for families with children?</h3>
+                            <div class="faq-icon"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div>
+                        </div>
+                        <div class="faq-answer px-1"><p>Absolutely. We specialize in creating family-friendly itineraries that are both safe and engaging for all ages. We offer dedicated family suites, special activities for children (like junior ranger programs), and guides who are experienced in making the safari a magical learning experience for the young ones.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-24 md:py-32">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Plan Your Bespoke Journey</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Your adventure of a lifetime is just a conversation away. Reach out to our safari specialists, and let us begin crafting your personalized itinerary today.</p>
+                <form class="max-w-2xl mx-auto text-left space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input type="text" placeholder="Your Name" class="form-input w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <input type="email" placeholder="Your Email" class="form-input w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <input type="text" placeholder="Subject (e.g., Honeymoon Safari, Family Trip)" class="form-input w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                    <textarea placeholder="Tell us about your dream safari..." rows="6" class="form-input w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    <div class="text-center">
+                        <button type="submit" class="safari-btn font-bold py-4 px-12 rounded-lg text-lg shadow-lg magnetic-item">Send Inquiry</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-12 bg-gray-800 dark:bg-black text-gray-300">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2025 Peng Tours & Safaris Limited. All Rights Reserved.</p>
+            <p class="text-sm mt-2">Crafting Executive Journeys into the Heart of Africa.</p>
+        </div>
+    </footer>
+
+    <!-- Lottie Player JS -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <!-- GSAP (Animation Platform) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis for Smooth Scrolling -->
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+    <!-- Glide.js for Carousel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.6.0/glide.min.js"></script>
+
+    <!-- Page Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // --- PRELOADER ---
+            const preloader = document.getElementById('preloader');
+            window.addEventListener('load', () => { preloader.classList.add('loaded'); });
+
+            // --- SMOOTH SCROLLING (LENIS) ---
+            const lenis = new Lenis();
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            // --- CUSTOM CURSOR & MAGNETIC ITEMS ---
+            const cursor = document.getElementById('custom-cursor');
+            const magneticItems = document.querySelectorAll('.magnetic-item');
+            const hoverables = document.querySelectorAll('a, button, .faq-question, .gallery-item');
+            
+            let mouseX = 0, mouseY = 0;
+            gsap.to({}, 0.016, {
+                repeat: -1,
+                onRepeat: function() {
+                    gsap.set(cursor, {
+                        left: mouseX,
+                        top: mouseY
+                    });
+                }
+            });
+
+            window.addEventListener('mousemove', e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            });
+
+            magneticItems.forEach(el => {
+                el.addEventListener('mousemove', function(e) {
+                    const { clientX, clientY } = e;
+                    const { left, top, width, height } = this.getBoundingClientRect();
+                    const x = clientX - (left + width / 2);
+                    const y = clientY - (top + height / 2);
+                    gsap.to(this, { x: x * 0.3, y: y * 0.3, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
+                });
+                el.addEventListener('mouseleave', function() {
+                    gsap.to(this, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)' });
+                });
+            });
+
+            // --- DARK MODE ---
+            const toggler = document.getElementById('dark-mode-toggler');
+            const html = document.documentElement;
+            const sunIcon = toggler.querySelector('.sun');
+            const moonIcon = toggler.querySelector('.moon');
+
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                } else {
+                    html.classList.remove('dark');
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                }
+            }
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            applyTheme(savedTheme);
+
+            toggler.addEventListener('click', () => {
+                const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
+                applyTheme(newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // --- NAVBAR & MOBILE MENU ---
+            const navbar = document.getElementById('navbar');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 50); });
+            mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+
+            // --- FAQ ACCORDION ---
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                item.querySelector('.faq-question').addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    faqItems.forEach(i => i.classList.remove('active'));
+                    if (!isActive) item.classList.add('active');
+                });
+            });
+            
+            // --- TESTIMONIALS CAROUSEL (GLIDE.JS) ---
+            new Glide('.glide', {
+                type: 'carousel',
+                startAt: 0,
+                perView: 2,
+                focusAt: 'center',
+                gap: 32,
+                autoplay: 5000,
+                hoverpause: true,
+                breakpoints: {
+                    768: { perView: 1 }
+                }
+            }).mount();
+
+            // --- GSAP ANIMATIONS ---
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Enhanced Hero Animation (Character-level)
+            const heroTitle = document.querySelector('.hero-line-chars');
+            const heroText = "Curated Journeys into the Wild";
+            heroTitle.textContent = ''; // Clear existing text
+            heroText.split('').forEach(char => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                span.style.display = 'inline-block'; // Important for transform
+                if (char.trim() === '') {
+                    span.style.width = '0.25em'; // Give space some width
+                }
+                heroTitle.appendChild(span);
+            });
+
+            gsap.from(heroTitle.children, {
+                duration: 1,
+                y: 80,
+                opacity: 0,
+                stagger: 0.03,
+                ease: "power3.out",
+                delay: 0.7
+            });
+            
+            gsap.from(".hero-line", { duration: 1, y: 50, opacity: 0, stagger: 0.2, delay: 1.5, ease: "power3.out" });
+
+            // Section Title & Subtitle Animations
+            gsap.utils.toArray('.section-title, .section-subtitle').forEach(el => {
+                gsap.to(el, {
+                    y: 0, opacity: 1, duration: 1, ease: 'power3.out',
+                    scrollTrigger: { trigger: el, start: 'top 85%' }
+                });
+            });
+            
+            // Staggered Content Animations
+            gsap.utils.toArray('.about-content > *, .experience-card, .fleet-card, .gallery-item').forEach(el => {
+                gsap.from(el, {
+                    y: 50, opacity: 0, duration: 0.8, ease: 'power2.out',
+                    scrollTrigger: { trigger: el, start: 'top 85%', stagger: 0.1 }
+                });
+            });
+
+            // About Section Images
+            gsap.from(".about-image-container img", {
+                scale: 0.8, opacity: 0, stagger: 0.2, duration: 1, ease: 'power3.out',
+                scrollTrigger: { trigger: ".about-image-container", start: 'top 80%' }
+            });
+        });
+    </script>
+</body>
+</html>
