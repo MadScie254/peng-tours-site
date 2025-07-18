@@ -49,11 +49,11 @@
             background-color: var(--color-bg-dark);
             color: var(--color-text-dark-theme);
         }
-        .card, .faq-item, .form-input, .fleet-card, .testimonial-card {
+        .card, .faq-item, .form-input, .fleet-card, .testimonial-card, .destination-card {
             background-color: #FFFFFF;
             color: var(--color-text-light-theme);
         }
-        html.dark .card, html.dark .faq-item, html.dark .form-input, html.dark .fleet-card, html.dark .testimonial-card {
+        html.dark .card, html.dark .faq-item, html.dark .form-input, html.dark .fleet-card, html.dark .testimonial-card, html.dark .destination-card {
             background-color: #1E1E1E;
             color: var(--color-text-dark-theme);
         }
@@ -61,30 +61,29 @@
 
         /* --- CUSTOM CURSOR --- */
         #custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--color-primary);
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
+            position: fixed; width: 20px; height: 20px;
+            border: 2px solid var(--color-primary); border-radius: 50%;
+            pointer-events: none; transform: translate(-50%, -50%);
             transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
             z-index: 10001;
         }
         #custom-cursor.hover {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background-color: rgba(184, 134, 11, 0.2);
         }
 
-        /* --- PRELOADER --- */
+        /* --- ENHANCED PRELOADER --- */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--color-bg-dark); z-index: 10000; display: flex;
-            justify-content: center; align-items: center;
-            transition: opacity 0.75s ease, visibility 0.75s ease;
+            z-index: 10000; display: flex; overflow: hidden;
         }
-        #preloader.loaded { opacity: 0; visibility: hidden; }
+        .preloader-panel {
+            width: 50%; height: 100%; background-color: var(--color-bg-dark);
+            display: flex; justify-content: center; align-items: center;
+        }
+        #preloader-lottie {
+            transition: opacity 0.3s ease;
+        }
 
         /* --- NAVIGATION BAR --- */
         #navbar {
@@ -125,6 +124,39 @@
         .gallery-item img { transition: transform 0.5s ease; }
         .gallery-item:hover img { transform: scale(1.1); }
         
+        /* --- DESTINATIONS SECTION --- */
+        .destination-card {
+            position: relative; overflow: hidden; border-radius: 0.75rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: box-shadow 0.4s ease;
+        }
+        .destination-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .destination-card img {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .destination-card:hover img {
+            transform: scale(1.1);
+        }
+        .destination-content {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            transform: translateY(40%);
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .destination-card:hover .destination-content {
+            transform: translateY(0);
+        }
+        .destination-content p {
+            opacity: 0;
+            transition: opacity 0.4s ease 0.2s;
+        }
+        .destination-card:hover .destination-content p {
+            opacity: 1;
+        }
+
         /* --- FAQ ACCORDION --- */
         .faq-item .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out; }
         .faq-item.active .faq-answer { max-height: 200px; padding-top: 1rem; padding-bottom: 1rem; }
@@ -132,24 +164,11 @@
         .faq-icon { transition: transform 0.4s ease; }
 
         /* --- TESTIMONIALS CAROUSEL (GLIDE.JS) --- */
-        .glide__slide {
-            opacity: 0.5;
-            transform: scale(0.9);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-        .glide__slide--active {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .glide__bullets {
-            bottom: -2em;
-        }
-        .glide__bullet {
-            background-color: #ccc;
-        }
-        .glide__bullet--active {
-            background-color: var(--color-primary);
-        }
+        .glide__slide { opacity: 0.5; transform: scale(0.9); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .glide__slide--active { opacity: 1; transform: scale(1); }
+        .glide__bullets { bottom: -2em; }
+        .glide__bullet { background-color: #ccc; }
+        .glide__bullet--active { background-color: var(--color-primary); }
 
     </style>
 </head>
@@ -158,9 +177,13 @@
     <!-- Custom Cursor -->
     <div id="custom-cursor"></div>
 
-    <!-- Lottie Preloader -->
+    <!-- Enhanced Lottie Preloader -->
     <div id="preloader">
-        <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_tmsb796g.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+        <div class="preloader-panel" id="panel-left"></div>
+        <div id="preloader-lottie">
+            <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_tmsb796g.json" background="transparent" speed="1" style="width: 200px; height: 200px;" loop autoplay></lottie-player>
+        </div>
+        <div class="preloader-panel" id="panel-right"></div>
     </div>
 
     <!-- Header & Navigation -->
@@ -173,24 +196,17 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="#home" class="nav-link magnetic-item">HOME</a>
                 <a href="#experiences" class="nav-link magnetic-item">EXPERIENCES</a>
-                <div class="relative dropdown">
-                    <button class="nav-link magnetic-item">GROUP TOURS</button>
-                    <div class="dropdown-menu absolute hidden bg-white dark:bg-gray-800 shadow-lg rounded-md mt-2 py-2 w-48">
-                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Untamed Encounter</a>
-                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Team Building</a>
-                        <a href="#group-tours" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Volunteering</a>
-                    </div>
-                </div>
+                <a href="#destinations" class="nav-link magnetic-item">DESTINATIONS</a>
                 <a href="#about" class="nav-link magnetic-item">ABOUT</a>
                 <a href="#faq" class="nav-link magnetic-item">FAQs</a>
                 <a href="#contact" class="nav-link magnetic-item">CONTACT US</a>
             </div>
             <div class="flex items-center">
-                <button id="dark-mode-toggler" title="Toggle dark mode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none magnetic-item">
+                <button id="dark-mode-toggler" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none magnetic-item">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 moon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sun" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 </button>
-                <button id="mobile-menu-button" class="md:hidden ml-4 p-2 rounded-md focus:outline-none" title="Open mobile menu">
+                <button id="mobile-menu-button" class="md:hidden ml-4 p-2 rounded-md focus:outline-none">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                 </button>
             </div>
@@ -198,7 +214,7 @@
         <div id="mobile-menu" class="hidden md:hidden bg-white/80 dark:bg-black/80 backdrop-blur-sm">
             <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">HOME</a>
             <a href="#experiences" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">EXPERIENCES</a>
-            <a href="#group-tours" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">GROUP TOURS</a>
+            <a href="#destinations" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">DESTINATIONS</a>
             <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">ABOUT</a>
             <a href="#faq" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">FAQs</a>
             <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200 dark:hover:bg-gray-700">CONTACT US</a>
@@ -256,37 +272,32 @@
                 </div>
             </div>
         </section>
-
-        <!-- NEW: The Fleet Section -->
-        <section id="fleet" class="py-24 md:py-32">
+        
+        <!-- NEW: Signature Destinations Section -->
+        <section id="destinations" class="py-24 md:py-32">
             <div class="container mx-auto px-6 text-center">
-                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Our Executive Fleet</h2>
-                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Comfort, safety, and optimal viewing are paramount. Our fleet of custom-fitted, extended Toyota Land Cruisers are maintained to the highest standards, ensuring reliability in the most remote locations.</p>
-                <div class="grid md:grid-cols-2 gap-8 text-left items-center">
-                    <div class="fleet-image">
-                        <img src="https://images.unsplash.com/photo-1599933318633-14d437a9a473?auto=format&fit=crop&w=1200&q=80" alt="Safari vehicle interior" class="rounded-lg shadow-2xl w-full">
+                <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Signature Destinations</h2>
+                <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">From the endless plains of the Mara to the shadow of Kilimanjaro, our journeys cover the most iconic and breathtaking landscapes in Africa.</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1589953911903-6987c4a5b4a1?auto=format&fit=crop&w=800&q=80" class="h-full w-full object-cover">
+                        <div class="destination-content text-white">
+                            <h3 class="text-3xl font-bold font-serif mb-2">Maasai Mara</h3>
+                            <p>Witness the Great Migration in the world's most famous reserve, a theatre of life and death on an epic scale.</p>
+                        </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
-                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
-                            <div>
-                                <h3 class="font-bold text-lg">Pop-Up Photographic Roofs</h3>
-                                <p>Unobstructed 360-degree views for the perfect shot, every time.</p>
-                            </div>
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1535330443203-125394d5ddc3?auto=format&fit=crop&w=800&q=80" class="h-full w-full object-cover">
+                        <div class="destination-content text-white">
+                            <h3 class="text-3xl font-bold font-serif mb-2">Amboseli</h3>
+                            <p>Home to vast elephant herds, framed by the majestic, snow-capped peak of Mount Kilimanjaro.</p>
                         </div>
-                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
-                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
-                            <div>
-                                <h3 class="font-bold text-lg">On-Board Charging & Wi-Fi</h3>
-                                <p>Stay connected and powered up, even in the heart of the bush.</p>
-                            </div>
-                        </div>
-                        <div class="fleet-card p-6 rounded-lg shadow-md flex items-start space-x-4">
-                            <span class="text-2xl mt-1" style="color: var(--color-primary);">✓</span>
-                            <div>
-                                <h3 class="font-bold text-lg">Cooler Box with Refreshments</h3>
-                                <p>Enjoy complimentary chilled water, soft drinks, and snacks throughout your game drive.</p>
-                            </div>
+                    </div>
+                    <div class="destination-card">
+                        <img src="https://images.unsplash.com/photo-1618324443936-908869472653?auto=format&fit=crop&w=800&q=80" class="h-full w-full object-cover">
+                        <div class="destination-content text-white">
+                            <h3 class="text-3xl font-bold font-serif mb-2">Samburu</h3>
+                            <p>Discover the "Special 5" in a rugged, semi-arid landscape of dramatic beauty and unique wildlife.</p>
                         </div>
                     </div>
                 </div>
@@ -299,16 +310,16 @@
                 <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Captured Moments</h2>
                 <p class="section-subtitle max-w-3xl mx-auto text-lg mb-16">Words can only say so much. Explore a collection of moments captured by our guests and guides, each telling a unique story of the African wild.</p>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="gallery-item grid-item col-span-2 row-span-2"><img src="https://images.unsplash.com/photo-1589953911903-6987c4a5b4a1?auto=format&fit=crop&w=1200&q=80" alt="Elephant family" class="h-full w-full object-cover"></div>
-                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1547471080-7cc2d5d88e93?auto=format&fit=crop&w=800&q=80" alt="Lion" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item col-span-2 row-span-2"><img src="https://images.unsplash.com/photo-1547471080-7cc2d5d88e93?auto=format&fit=crop&w=1200&q=80" alt="Lion" class="h-full w-full object-cover"></div>
                     <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1502472401483-a7a2a0618024?auto=format&fit=crop&w=800&q=80" alt="Giraffe at sunset" class="h-full w-full object-cover"></div>
                     <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1557053913-35473a537446?auto=format&fit=crop&w=800&q=80" alt="Cheetah" class="h-full w-full object-cover"></div>
                     <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1593629828264-754d92193b0a?auto=format&fit=crop&w=800&q=80" alt="Hot air balloon over savanna" class="h-full w-full object-cover"></div>
+                    <div class="gallery-item grid-item"><img src="https://images.unsplash.com/photo-1599933318633-14d437a9a473?auto=format&fit=crop&w=800&q=80" alt="Safari vehicle in action" class="h-full w-full object-cover"></div>
                 </div>
             </div>
         </section>
 
-        <!-- NEW: Testimonials Section -->
+        <!-- Testimonials Section -->
         <section id="testimonials" class="py-24 md:py-32">
             <div class="container mx-auto px-6 text-center">
                 <h2 class="section-title text-4xl md:text-5xl font-bold mb-6">Words From Our Voyagers</h2>
@@ -413,9 +424,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            // --- PRELOADER ---
+            // --- ENHANCED PRELOADER ---
             const preloader = document.getElementById('preloader');
-            window.addEventListener('load', () => { preloader.classList.add('loaded'); });
+            const panelLeft = document.getElementById('panel-left');
+            const panelRight = document.getElementById('panel-right');
+            const lottiePlayer = document.getElementById('preloader-lottie');
+
+            gsap.timeline({
+                onComplete: () => {
+                    preloader.style.display = 'none';
+                    // Start hero animation after preloader is gone
+                    animateHero();
+                }
+            })
+            .to(lottiePlayer, { opacity: 0, duration: 0.3, delay: 1.5 })
+            .to([panelLeft, panelRight], {
+                width: 0,
+                ease: 'power3.inOut',
+                duration: 1
+            }, "-=0.1");
+
 
             // --- SMOOTH SCROLLING (LENIS) ---
             const lenis = new Lenis();
@@ -425,29 +453,20 @@
             // --- CUSTOM CURSOR & MAGNETIC ITEMS ---
             const cursor = document.getElementById('custom-cursor');
             const magneticItems = document.querySelectorAll('.magnetic-item');
-            const hoverables = document.querySelectorAll('a, button, .faq-question, .gallery-item');
+            const hoverables = document.querySelectorAll('a, button, .faq-question, .gallery-item, .destination-card');
             
             let mouseX = 0, mouseY = 0;
             gsap.to({}, 0.016, {
                 repeat: -1,
                 onRepeat: function() {
-                    gsap.set(cursor, {
-                        left: mouseX,
-                        top: mouseY
-                    });
+                    gsap.set(cursor, { left: mouseX, top: mouseY });
                 }
             });
-
-            window.addEventListener('mousemove', e => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-
+            window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
             hoverables.forEach(el => {
                 el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
                 el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
             });
-
             magneticItems.forEach(el => {
                 el.addEventListener('mousemove', function(e) {
                     const { clientX, clientY } = e;
@@ -466,7 +485,6 @@
             const html = document.documentElement;
             const sunIcon = toggler.querySelector('.sun');
             const moonIcon = toggler.querySelector('.moon');
-
             function applyTheme(theme) {
                 if (theme === 'dark') {
                     html.classList.add('dark');
@@ -480,7 +498,6 @@
             }
             const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             applyTheme(savedTheme);
-
             toggler.addEventListener('click', () => {
                 const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
                 applyTheme(newTheme);
@@ -505,57 +522,45 @@
             });
             
             // --- TESTIMONIALS CAROUSEL (GLIDE.JS) ---
-            new Glide('.glide', {
-                type: 'carousel',
-                startAt: 0,
-                perView: 2,
-                focusAt: 'center',
-                gap: 32,
-                autoplay: 5000,
-                hoverpause: true,
-                breakpoints: {
-                    768: { perView: 1 }
-                }
-            }).mount();
+            if (document.querySelector('.glide')) {
+                new Glide('.glide', {
+                    type: 'carousel', startAt: 0, perView: 2, focusAt: 'center',
+                    gap: 32, autoplay: 5000, hoverpause: true,
+                    breakpoints: { 768: { perView: 1 } }
+                }).mount();
+            }
 
             // --- GSAP ANIMATIONS ---
             gsap.registerPlugin(ScrollTrigger);
 
-            // Enhanced Hero Animation (Character-level)
-            const heroTitle = document.querySelector('.hero-line-chars');
-            const heroText = "Curated Journeys into the Wild";
-            heroTitle.textContent = ''; // Clear existing text
-            heroText.split('').forEach(char => {
-                const span = document.createElement('span');
-                span.textContent = char;
-                span.style.display = 'inline-block'; // Important for transform
-                if (char.trim() === '') {
-                    span.style.width = '0.25em'; // Give space some width
-                }
-                heroTitle.appendChild(span);
-            });
+            function animateHero() {
+                const heroTitle = document.querySelector('.hero-line-chars');
+                const heroText = "Curated Journeys into the Wild";
+                heroTitle.textContent = ''; 
+                heroText.split('').forEach(char => {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.style.display = 'inline-block';
+                    if (char.trim() === '') { span.style.width = '0.25em'; }
+                    heroTitle.appendChild(span);
+                });
 
-            gsap.from(heroTitle.children, {
-                duration: 1,
-                y: 80,
-                opacity: 0,
-                stagger: 0.03,
-                ease: "power3.out",
-                delay: 0.7
-            });
-            
-            gsap.from(".hero-line", { duration: 1, y: 50, opacity: 0, stagger: 0.2, delay: 1.5, ease: "power3.out" });
+                gsap.from(heroTitle.children, {
+                    duration: 1, y: 80, opacity: 0, stagger: 0.03, ease: "power3.out", delay: 0.2
+                });
+                gsap.from(".hero-line", { duration: 1, y: 50, opacity: 0, stagger: 0.2, delay: 0.8, ease: "power3.out" });
+            }
 
             // Section Title & Subtitle Animations
             gsap.utils.toArray('.section-title, .section-subtitle').forEach(el => {
-                gsap.to(el, {
-                    y: 0, opacity: 1, duration: 1, ease: 'power3.out',
+                gsap.from(el, {
+                    y: 50, opacity: 0, duration: 1, ease: 'power3.out',
                     scrollTrigger: { trigger: el, start: 'top 85%' }
                 });
             });
             
             // Staggered Content Animations
-            gsap.utils.toArray('.about-content > *, .experience-card, .fleet-card, .gallery-item').forEach(el => {
+            gsap.utils.toArray('.about-content > *, .experience-card, .fleet-card, .gallery-item, .destination-card').forEach(el => {
                 gsap.from(el, {
                     y: 50, opacity: 0, duration: 0.8, ease: 'power2.out',
                     scrollTrigger: { trigger: el, start: 'top 85%', stagger: 0.1 }
